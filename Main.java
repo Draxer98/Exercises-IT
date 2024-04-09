@@ -7,9 +7,12 @@ public class Main {
                 "[1] Inserimento",
                 "[2] Visualizzazione",
                 "[3] Ricerca",
-                "[4] Fine"};
+                "[4] Modifica Contratto",
+                "[5] Fine"};
         boolean Sitel=true;
+        boolean bool;
         final int nMax = 3;
+        int scelta=0;
         int contrattiVenduti = 0;
         Contatto[] gestore = new Contatto[nMax];
 
@@ -37,17 +40,34 @@ public class Main {
                     break;
                 }
 
+                case 4: {
+                    System.out.println(visualizza(gestore, contrattiVenduti));
+                    do {
+                        bool = true;
+                        System.out.println("Quale contatto vuole modificare?");
+                        scelta = keyboard.nextInt();
+                        keyboard.nextLine();
+                        if (scelta <= 0 || scelta > contrattiVenduti) {
+                            System.out.println("Utente inserito non esistente, riprova");
+                            bool = false;
+                        }
+                    } while (!bool);
+
+                    gestore[scelta]=ModificaContratto(gestore, contrattiVenduti, keyboard, Sitel, scelta);
+                    break;
+                }
                 default:
                     fine = false;
                     break;
             }
         } while (fine);
     }
-    private static void visualizza(Contatto[] gestore, int contrattiVenduti) {
+    private static int visualizza(Contatto[] gestore, int contrattiVenduti) {
         System.out.println("Elenco dei contatti:");
         for (int i = 0; i < contrattiVenduti; i++) {
             System.out.println(gestore[i].stampa());
         }
+        return contrattiVenduti;
     }
     private static Contatto leggiPersona(boolean Sitel, Scanner keyboard, Contatto[] gestore, int contrattiVenduti) {
         boolean verifica;
@@ -67,7 +87,7 @@ public class Main {
                     break;
                 }
             }
-        } while (verifica==false);
+        } while (!verifica);
 
         System.out.println("\nInserisci il numero di telefono: ");
         if (Sitel) {
@@ -86,5 +106,13 @@ public class Main {
         }
 
         return persona;
+    }
+    private static Contatto ModificaContratto(Contatto[] gestore, int contrattiVenduti, Scanner keyboard, boolean Sitel, int scelta){
+
+        scelta--;
+
+        gestore[scelta] =leggiPersona(Sitel, keyboard, gestore, contrattiVenduti);
+
+        return gestore[scelta];
     }
 }
