@@ -1,225 +1,120 @@
-import static tools.utility.*;
-
 import java.util.Scanner;
+import java.util.Random;
+
 public class Main {
     public static void main(String[] args) {
-        String[] operazioni = {"VODAFONE",
-                "[1] Inserimento",
-                "[2] Visualizzazione",
-                "[3] Ricerca",
-                "[4] Modifica Contratto",
-                "[5] Cancella contratto",
-                "[6] Fine"};
-        boolean Sitel = true;
-        boolean bool;
-        final int nMax = 3;
-        int scelta = 0;
-        int contrattiVenduti = 0;
-        Contatto[] gestore = new Contatto[nMax];
-
+        //Dichiarazione delle variabili
         Scanner keyboard = new Scanner(System.in);
+        Random casuale = new Random();
+        int random = 0;
+        int contatore = 0;
+        int numero = 0;
+        int ricerca = 0;
+        int numeroPrecedente = 0;
+        int[] numeri = new int[10];
+        for (int i = 0; i < numeri.length; i++) {
+            numeri[i] = i;
+        }
+        int scelta = 0;
+        String[] menu = {"[1] - WrongIndexSearch",
+                "[2] - EvenOddSearch",
+                "[3] - BiBinarySearch",
+                "[4] - fine"};
 
-        boolean fine = true;
+        //do-while e switch per le varie scelte
         do {
-            switch (menu(operazioni, keyboard)) {
+            for (int i = 0; i < menu.length; i++) {
+                System.out.println(menu[i]);
+            }
+            scelta = keyboard.nextInt();
+
+            switch (scelta) {
+                //Prima scelta (WrongIndexSearch)
                 case 1:
-
-                    if (contrattiVenduti < nMax) {
-                        gestore[contrattiVenduti] = leggiPersona(Sitel, keyboard, gestore, contrattiVenduti);
-                        contrattiVenduti++;
-                    } else {
-                        System.out.println("Non ci sono più contratti da vendere");
+                    ricerca = 0;
+                    //Se contatore è uguale a 0, random sarà ugaule ad un numero compreso da 3 a 5 commpresi
+                    if (contatore == 0) {
+                        random = casuale.nextInt(3, 5);
                     }
-                    break;
-                case 2: {
-                    visualizza(gestore, contrattiVenduti);
-                    break;
-                }
-
-                case 3: {
-                    if (contrattiVenduti != 0) {
-                        if (ricerca(gestore, leggiPersona(false, keyboard, gestore, contrattiVenduti), contrattiVenduti)) {
-                            System.out.println("Il contatto esiste");
+                    //Chiedo il numero da cercare
+                    System.out.println("Quale numero vuoi cercare: ");
+                    numero = keyboard.nextInt();
+                    //Richiamo il metodo WrongIndexSearch
+                    ricerca = WrongIndexSearch(casuale, numero, numeri, random, contatore, numeroPrecedente);
+                    //Se ricerca è uguale a -1 vuol dire che il numero cercato non esiste
+                    if (ricerca != -1) {
+                        //Se il contatore è uguale al numeero random, il numero sbaglierà
+                        if (contatore == random) {
+                            System.out.println("Il numero scelto è nella posizione: " + numeri[numeroPrecedente]);
+                            contatore = 0;
                         } else {
-                            System.out.println("Il contatto non esiste");
+                            System.out.println("Il numero scelto è nella posizione: " + numeri[ricerca]);
+                            contatore++;
+                            numeroPrecedente = ricerca;
                         }
                     } else {
-                        System.out.println("Non sono ancora presenti contratti venduti");
+                        System.out.println("Il numero scelto non esiste");
                     }
                     break;
-                }
-
-                case 4: {
-                    visualizza(gestore, contrattiVenduti);
-                    do {
-                        bool = true;
-                        System.out.println("Quale contatto vuole modificare?");
-                        scelta = keyboard.nextInt();
-                        keyboard.nextLine();
-                        if (scelta <= 0 || scelta > contrattiVenduti) {
-                            System.out.println("Utente inserito non esistente, riprova");
-                            bool = false;
-                        }
-                    } while (!bool);
-
-                    gestore[scelta] = ModificaContratto(gestore, contrattiVenduti, keyboard, Sitel, scelta);
+                //Seconda scelta (EvenOddSearch)
+                case 2:
                     break;
-                }
-
-                case 5: {
-                    String[] metodo = {"[1] Con numero telefonico", "[2] Con nome e cognome"};
-                    if (contrattiVenduti != 0) {
-                        visualizza(gestore, contrattiVenduti);
-                        do {
-                            System.out.println("Tipo di eliminazione contratto: ");
-                            for (int i = 0; i < metodo.length; i++) {
-                                System.out.println(metodo[i]);
-                            }
-                            scelta = keyboard.nextInt();
-                            keyboard.nextLine();
-
-                            if (scelta == 1 || scelta == 2) {
-                                EliminaContratto(scelta, gestore, contrattiVenduti, keyboard);
-                                contrattiVenduti--;
-                            } else {
-                                System.out.println("Numero inserito non valido, 1 o 2 ");
-                            }
-                        } while (scelta < 1 || scelta > 2);
+                //Terza scelta (BiBinarySearch)
+                case 3:
+                    //Chiedo il numero da cercare
+                    System.out.println("Quale numero cerchi: ");
+                    numero = keyboard.nextInt();
+                    //Chiamo il metotodo BiBinarySearch
+                    ricerca = biBinarySearch(numeri, numero);
+                    //Se ricerca è uguale a -1, vuol dire che il numero cercato non esiste
+                    if (ricerca != -1) {
+                        System.out.println("Il numero cercato è: " + numeri[ricerca]);
                     } else {
-                        System.out.println("Non sono ancora presenti contratti venduti");
+                        System.out.println("Numero cercato non trovato");
                     }
-                    break;
-                }
-                default:
-                    fine = false;
+
                     break;
             }
-        } while (fine);
+        } while (scelta != 4);
     }
 
-    private static int visualizza(Contatto[] gestore, int contrattiVenduti) {
-        if (contrattiVenduti != 0) {
-            System.out.println("Elenco dei contatti:");
-            for (int i = 0; i < contrattiVenduti; i++) {
-                if (gestore[i] != null) {
-                    System.out.println(gestore[i].stampa());
-                }
+    protected static int WrongIndexSearch(Random casuale, int numero, int[] numeri, int random, int contatore, int numeroPrecendete) {
+        int indice = -1;
+        //for che serve a trovare il numero e far ritornare il suo indice
+        for (int i = 0; i < numeri.length; i++) {
+            if (contatore == random && numero == numeri[i]) {
+                indice = numeri[i];
+                break;
             }
-        } else {
-            System.out.println("Non sono ancora presenti contratti venduti");
+            if (contatore != random && numero == numeri[i]) {
+                indice = numeri[i];
+                break;
+            }
         }
-
-        return contrattiVenduti;
+        return indice;
     }
 
-    private static Contatto leggiPersona(boolean Sitel, Scanner keyboard, Contatto[] gestore, int contrattiVenduti) {
-        boolean verifica;
-        String[] tipoC = {"Telefono", "1]abitazione", "2]cellulare", "3]aziendale"};
-        Contatto persona = new Contatto();
+    protected static void EvenOddSearch(int[] numeri) {
+        //Pultroppo questo metodo non so come farlo
+    }
+
+    //Metodo che usa la ricerca dicotomica
+    protected static int biBinarySearch(int[] numeri, int numero) {
+        int sinistra = 0;
+        int destra = numeri.length - 1;
 
         do {
-            verifica = true;
-            System.out.println("\nInserisci il nome: ");
-            persona.nome = keyboard.nextLine();
-            System.out.println("\nInserisci il cognome: ");
-            persona.cognome = keyboard.nextLine();
-            for (int i = 0; i < contrattiVenduti; i++) {
-                if (persona.nome.equals(gestore[i].nome) && persona.cognome.equals(gestore[i].cognome)) {
-                    System.out.println("Utente già registrato, reinserire: ");
-                    verifica = false;
-                    break;
-                }
+            int medio = (sinistra + destra) / 2;
+
+            if (numeri[medio] == numero) {
+                return medio;
+            } else if (numeri[medio] < numero) {
+                sinistra = medio + 1;
+            } else {
+                destra = medio - 1;
             }
-        } while (!verifica);
+        } while (sinistra <= destra);
 
-        System.out.println("\nInserisci il numero di telefono: ");
-        if (Sitel) {
-            persona.telefono = keyboard.nextLine();
-            switch (menu(tipoC, keyboard)) {
-                case 1:
-                    persona.tipo = tipoContratto.abitazione;
-                    break;
-                case 2:
-                    persona.tipo = tipoContratto.cellulare;
-                    break;
-                default:
-                    persona.tipo = tipoContratto.aziendale;
-                    break;
-            }
-        }
-
-        return persona;
-    }
-
-    private static Contatto ModificaContratto(Contatto[] gestore, int contrattiVenduti, Scanner keyboard, boolean Sitel, int scelta) {
-
-        scelta--;
-
-        gestore[scelta] = leggiPersona(Sitel, keyboard, gestore, contrattiVenduti);
-
-        return gestore[scelta];
-    }
-
-    private static boolean ricerca(Contatto[] gestore, Contatto contatto, int contrattiVenduti) {
-        boolean ricerca = false;
-
-        for (int i = 0; i < contrattiVenduti; i++) {
-            if (contatto.nome.equals(gestore[i].nome) && contatto.cognome.equals(gestore[i].cognome)) {
-                ricerca = true;
-            }
-        }
-        return ricerca;
-    }
-
-    private static Contatto EliminaContratto(int scelta, Contatto gestore[], int contrattiVenduti, Scanner keyboard) {
-        Contatto utente = new Contatto();
-        if (scelta == 1) {
-            System.out.println("Inserire il numero: ");
-            utente.telefono = keyboard.nextLine();
-            for (int i = 0; i < contrattiVenduti; i++) {
-            if (utente.telefono.equals(gestore[i].telefono)) {
-                    if (i == 0 && contrattiVenduti > 1) {
-                        gestore[i] = gestore[i + 1];
-                        gestore[i + 1] = null;
-                        break;
-                    }
-                    else if (i == 1 && contrattiVenduti == 3) {
-                        gestore[i] = gestore[i + 1];
-                        gestore[i + 1] = null;
-                        break;
-                    }
-                    else if (i == contrattiVenduti - 1) {
-                        gestore[i] = null;
-                        break;
-                    }
-                }
-            }
-        } else {
-            System.out.println("Inserire il nome: ");
-            utente.nome = keyboard.nextLine();
-            System.out.println("Inserire il cognome: ");
-            utente.cognome = keyboard.nextLine();
-
-            for (int i = 0; i < contrattiVenduti; i++) {
-                if (utente.nome.equals(gestore[i].nome) && utente.cognome.equals(gestore[i].cognome)) {
-                    if (i == 0 && contrattiVenduti > 1) {
-                        gestore[i] = gestore[i + 1];
-                        gestore[i + 1] = null;
-                        break;
-                    }
-                    else if (i == 1 && contrattiVenduti == 3) {
-                        gestore[i] = gestore[i + 1];
-                        gestore[i + 1] = null;
-                        break;
-                    }
-                    else if (i == contrattiVenduti - 1) {
-                        gestore[i] = null;
-                        break;
-                    }
-                }
-            }
-        }
-
-        return utente;
+        return -1;
     }
 }
